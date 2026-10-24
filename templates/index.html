@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChangeRadar — Code Change Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">◈</div><div><strong>ChangeRadar</strong><small>CODE INTELLIGENCE</small></div></div>
+      <div class="nav-label">WORKSPACE</div>
+      <button class="nav-item active" data-view="analyze"><span>⌁</span> New analysis <kbd>↵</kbd></button>
+      <button class="nav-item" data-view="history"><span>◷</span> Report history</button>
+      <div class="sidebar-bottom">
+        <div class="status-card"><span class="status-dot"></span><div><strong>Analysis engine</strong><small id="engine-status">Checking configuration…</small></div></div>
+        <div class="profile"><div class="avatar">CR</div><div><strong>Developer workspace</strong><small>Local environment</small></div></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar"><div class="breadcrumb">Workspace <span>/</span> <b id="crumb">New analysis</b></div><div class="top-actions"><span class="live-pill"><i></i> SYSTEM READY</span><button class="icon-button" id="sample-btn" title="Load sample diff">⌘</button></div></header>
+
+      <section id="analyze-view" class="view">
+        <div class="page-heading"><div><div class="eyebrow">PRE-MERGE QUALITY GATE</div><h1>See the risk before<br class="mobile-break"> you ship.</h1><p>Analyze code changes, surface risky patterns, and get AI-assisted review recommendations.</p></div><div class="heading-orb"><span>✳</span><small>CHANGE<br>INTELLIGENCE</small></div></div>
+
+        <div class="workspace-grid">
+          <section class="panel input-panel">
+            <div class="panel-heading"><div><span class="step">01</span><h2>Change input</h2></div><span class="muted tiny">GIT DIFF</span></div>
+            <label class="field-label" for="analysis-title">Analysis name <span>OPTIONAL</span></label>
+            <input id="analysis-title" class="text-input" maxlength="180" placeholder="e.g. Payment validation refactor">
+            <div class="editor-top"><div class="editor-dots"><i></i><i></i><i></i></div><span>patch.diff</span><button id="clear-btn" class="text-button">Clear</button></div>
+            <textarea id="diff-input" spellcheck="false" placeholder="Paste your Git diff here…
+
+Tip: run `git diff main...your-branch` and paste the output."></textarea>
+            <div class="input-footer"><label class="upload-button" for="diff-file">↑ Upload .diff / .patch<input id="diff-file" type="file" accept=".diff,.patch,.txt"></label><span id="input-count">0 characters</span></div>
+            <button id="analyze-btn" class="primary-button"><span>Analyze changes</span><b>↗</b></button>
+            <p class="privacy-note">⌑ Your diff is stored in your local app database. AI review sends diff text to Gemini when configured.</p>
+          </section>
+
+          <section class="right-column">
+            <div class="panel overview-panel"><div class="panel-heading"><div><span class="step">02</span><h2>Review overview</h2></div><span class="muted tiny">LIVE METRICS</span></div>
+              <div class="metric-grid"><div class="metric"><span>Files changed</span><strong id="metric-files">—</strong><small>in this diff</small></div><div class="metric"><span>Lines added</span><strong id="metric-added">—</strong><small class="positive">+ additions</small></div><div class="metric"><span>Lines removed</span><strong id="metric-removed">—</strong><small class="negative">− deletions</small></div></div>
+              <div class="risk-block"><div class="risk-top"><div><span class="muted">RULE-BASED RISK SCORE</span><div class="risk-number"><strong id="risk-score">—</strong><span>/ 100</span></div></div><span id="risk-badge" class="risk-badge neutral">NOT ANALYZED</span></div><div class="risk-track"><div id="risk-fill"></div></div><div class="risk-scale"><span>LOW</span><span>MEDIUM</span><span>HIGH</span><span>CRITICAL</span></div></div>
+            </div>
+            <div class="panel insight-panel"><div class="panel-heading"><div><span class="step">03</span><h2>What we check</h2></div></div><div class="check-list"><div><span class="check-icon">⌘</span><div><strong>Deterministic rules</strong><small>Secrets, dynamic execution, unsafe SQL, debug settings</small></div><span class="tag">STATIC</span></div><div><span class="check-icon purple">✳</span><div><strong>AI-assisted review</strong><small>Correctness, edge cases, reliability, test suggestions</small></div><span class="tag ai-tag">GEMINI</span></div><div><span class="check-icon green">◷</span><div><strong>Persistent reports</strong><small>Save, revisit, and compare analysis history</small></div><span class="tag">SQLITE</span></div></div></div>
+          </section>
+        </div>
+
+        <section id="results-section" class="results-section hidden">
+          <div class="results-heading"><div><div class="eyebrow">ANALYSIS COMPLETE</div><h2 id="result-title">Review results</h2><p id="result-summary"></p></div><button id="new-analysis-btn" class="secondary-button">＋ New analysis</button></div>
+          <div class="result-grid"><div class="panel findings-panel"><div class="panel-heading"><div><span class="step">04</span><h2>Rule-based findings</h2></div><span id="finding-count" class="count-pill">0 findings</span></div><div id="findings-list" class="findings-list"></div></div>
+          <div class="panel ai-panel"><div class="panel-heading"><div><span class="step ai-step">✳</span><h2>AI review</h2></div><span class="ai-label">GEMINI</span></div><div id="ai-content"><div class="empty-ai"><span>✳</span><strong>AI insights will appear here</strong><p>Analyze a diff to get additional review notes and test ideas.</p></div></div></div></div>
+        </section>
+      </section>
+
+      <section id="history-view" class="view hidden">
+        <div class="page-heading compact"><div><div class="eyebrow">YOUR WORKSPACE</div><h1>Report history.</h1><p>Revisit previous code reviews and their findings.</p></div><button class="primary-button compact-button" id="history-new-btn">＋ New analysis</button></div>
+        <div class="panel history-panel"><div class="panel-heading"><div><span class="step">◷</span><h2>Saved reports</h2></div><button id="refresh-history" class="text-button">↻ Refresh</button></div><div id="history-list" class="history-list"></div></div>
+      </section>
+      <footer><span>ChangeRadar <b>·</b> Code change intelligence</span><span>Built for safer merges <span class="footer-spark">✳</span></span></footer>
+    </main>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
