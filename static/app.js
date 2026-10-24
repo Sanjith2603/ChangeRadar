@@ -141,3 +141,63 @@ async function deleteReport(id) {
   } catch (err) { showToast(err.message); }
 }
 checkHealth();
+
+$("load-git-btn").addEventListener("click", async () => {
+  const repoPath = $("repo-path").value.trim();
+  const status = $("git-status");
+  const button = $("load-git-btn");
+
+  if (!repoPath) {
+    status.textContent = "Please enter your local Git repository path.";
+    return;
+  }
+
+  button.disabled = true;
+  button.querySelector("span").textContent = "Loading changes...";
+  status.textContent = "Reading Git changes from your repository...";
+
+  try {
+    const response = await fetch("/api/git-diff", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        repo_path: repoPath
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || "Could not load Git changes.");
+    }
+
+    if (data.has_changes && data.diff_text) {
+      $("diff-input").value = data.diff_text;
+      updateCount();
+
+      if (!$("analysis-title").value.trim()) {
+        $("analysis-title").value = data.repo_name
+          ? `Git review: ${data.repo_name}`
+          : "Git repository review";
+      }
+
+      status.textContent =
+        `Git changes loaded from ${data.repo_name || "repository"} (${data.branch || "current branch"}).`;
+
+      showToast("Git changes loaded. Click Analyze changes.");
+    } else {
+      status.textContent =
+        data.message || "No tracked changes found. Modify a tracked file and try again.";
+
+      showToast("No Git changes found.");
+    }
+  } catch (error) {
+    status.textContent = `Error: ${error.message}`;
+    showToast(error.message || "Failed to load Git changes.");
+  } finally {
+    button.disabled = false;
+    button.querySelector("span").textContent = "Load Git Changes";
+  }
+});
