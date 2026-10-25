@@ -47,3 +47,4 @@ If PowerShell blocks activation, use:
 ## Limitations
 This is a portfolio MVP, not a security scanner or a replacement for human code review. Rules are heuristic and can miss issues or flag safe code. The current risk score is an explainable demo heuristic, not a calibrated probability. The diff text is sent to Google Gemini when AI review is configured; do not submit proprietary code or secrets without permission. Use a `.env` file and never commit API keys.
 helloooo
+Testing ChangeRadar branch comparison.
